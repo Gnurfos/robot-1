@@ -85,7 +85,20 @@ Node: Disparity
     param: max distance
     param: time smoothing
     param: accepted deviation
-    
+
+Node: MotorsController
+    service: set_speed
+        left_motor
+            speed_percent
+            direction
+        right_motor
+            speed_percent
+            direction
+        duration
+
+Node: Slam ?
+Node: SensorsArray ?
+Node: WebUI ?
 
     
     
@@ -108,3 +121,4 @@ http://www.circuitbasics.com/setup-lcd-touchscreen-raspberry-pi/
 >>> p.stop()
 
 50 1.64V
+

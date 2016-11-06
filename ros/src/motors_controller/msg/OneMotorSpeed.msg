@@ -1,0 +1,2 @@
+bool direction_forward
+int8 speed_percent
