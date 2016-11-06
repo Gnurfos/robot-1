@@ -1,0 +1,110 @@
+ --- ROS ---
+
+/home/seb/download/vrac/ROScheatsheet_catkin.pdf
+
+
+step 0:
+    source /opt/ros/indigo/setup.zsh
+ or directly
+    source/home/seb/work/robot-one/ros/devel/setup.zsh
+
+
+run the master:
+    roscore
+
+
+
+
+
+
+
+29/10 13:20 seb@telperion ~/work/robot-one/ros/src/camera_simple> vi scripts/hello.py
+29/10 13:21 seb@telperion ~/work/robot-one/ros/src/camera_simple> rosrun camera_simple hello.py
+
+> rosnode list
+/rosout
+/talker_30709_1477740079879
+
+> rosnode info /talker_30709_1477740079879
+--------------------------------------------------------------------------------
+Node [/talker_30709_1477740079879]
+Publications:
+ * /chatter [std_msgs/String]
+ * /rosout [rosgraph_msgs/Log]
+
+
+
+
+rosrun turtlesim turtlesim_node
+
+node called /turtlesim
+
+rosrun turtlesim turtlesim_node __name:=my_turtle
+
+/my_turtle
+
+
+
+------------ stereo cams ---------------------------------
+
+
+
+
+
+
+
+calibration = StereoCalibration(input_folder=args.calibration_folder)
+
+
+rectified_pair = calibration.rectify(image_pair)
+    undistortion_map L/R
+    rectification_map L/R
+
+
+BMTuner(calibration)
+
+
+reprojectImageTo3D(tuner.disparity, calibration.disp_to_depth_mat)
+
+
+
+
+
+
+Node: CalibratedStereoCamera
+    params: calib_folder
+    params: resolution
+    params: fps
+    produces: rectified image pair
+    service: disp_to_depth_mat
+
+Node: Disparity
+    consumes: rectified image pair
+    produces: disparity
+    produces: point cloud
+    param: max distance
+    param: time smoothing
+    param: accepted deviation
+    
+
+    
+    
+http://answers.ros.org/question/220502/image-subscriber-lag-despite-queue-1/
+http://www.circuitbasics.com/setup-lcd-touchscreen-raspberry-pi/
+
+
+--- gpio tests on pi ---
+>>> import RPi.GPIO as gpio
+>>> gpio.setmode(gpio.BOARD)
+>>> gpio.setup(11, gpio.OUT)
+>>> gpio.output(11, 1)
+>>> gpio.output(11, 0)
+>>> p = gpio.PWM(11, 0.5)
+>>> p.start(1)
+>>> p.stop()
+>>> p.start(10) # 0.48V
+>>> p.stop()
+>>> p.start(100) # 3.28V
+>>> p.stop()
+
+50 1.64V

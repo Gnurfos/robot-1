@@ -1,0 +1,14 @@
+<launch>
+
+  <arg name="calib_dir" default="default"/>
+
+  <node name="cam" pkg="stereo_camera" type="camera_node.py" output="screen">
+    <param name="fps" value="10" />
+    <param name="resolution" value="640x480" />
+    <param name="full_calib_dir" value="$(find stereo_camera)/data/$(arg calib_dir)" />
+    <param name="left_cam_id" value="1" />
+    <param name="right_cam_id" value="0" />
+  </node>
+
+</launch>
+
