@@ -1,18 +1,38 @@
 #!/usr/bin/env python
+from functools import partial
 import os
+import StringIO
 
 import cv2
 import numpy as np
 import rospy
 from sensor_msgs.msg import Image
 from stereo_camera.msg import RectifiedPair
+from stereo_camera.srv import Calib, CalibResponse
 from cv_bridge import CvBridge, CvBridgeError
+
+
+def get_calib(full_calib_dir, request):
+    # Maybe not portable but sufficient for now
+    disp_to_depth_mat = np.load(os.path.join(full_calib_dir, 'disp_to_depth_mat.npy'))
+    serialized = StringIO.StringIO()
+    np.save(serialized, disp_to_depth_mat)
+    return CalibResponse(
+        disp_to_depth_mat=serialized.getvalue())
+
+
+def client_code_for_info():  # To move there once there is an actual client
+    s = rospy.ServiceProxy('camera_calib', Calib)
+    val = s()
+    valf = StringIO.StringIO(val.disp_to_depth_mat)
+    mat = np.load(valf)
 
 
 def node_main():
     rospy.init_node('images_feeder', anonymous=True)
     params = rospy.get_param('~')
     full_calib_dir = params['full_calib_dir']
+    calib_service = rospy.Service('camera_calib', Calib, partial(get_calib, full_calib_dir))
     sides = {
         'L': {
             'full_name': 'left',
@@ -57,6 +77,7 @@ def node_main():
         rate.sleep()
     for side in sides.values():
         side['cap'].release()
+    calib_service.shutdown()
 
 if __name__ == '__main__':
     try:
