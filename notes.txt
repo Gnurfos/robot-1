@@ -122,3 +122,30 @@ http://www.circuitbasics.com/setup-lcd-touchscreen-raspberry-pi/
 
 50 1.64V
 
+
+
+
+--- install on the pi ---
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu trusty main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net --recv-key 0xB01FA116
+sudo aptitude update
+sudo aptitude safe-upgrade
+sudo aptitude install ros-indigo-desktop
+sudo aptitude install ros-indigo-catkin
+..
+ros-indigo-rospy
+ros-indigo-sensor-msgs
+ros-indigo-ros-base
+ros-indigo-cv-bridge
+
+source /opt/ros/indigo/setup.zsh
+catkin_make
+source setup.zsh
+
+roslaunch default.launch calib_dir:=calib_640
+
+rosrun motors_controller scripts/motors_node.py
+rosservice call set_speed '{stop: true}'
+rosservice call set_speed '{stop: false, left: {direction_forward: true, speed_percent: 0}, right: {direction_forward: true, speed_percent: 50}, duration_ms: 1000}'
+
+

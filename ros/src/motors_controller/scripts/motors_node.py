@@ -18,20 +18,22 @@ def set_speed(gpio_interface, request):
     if request.stop:
         gpio_interface.stop()
     else:
-        gpio_interface.enable1.start(request.left.speed_percent)
-        if request.left.direction_forward:
-            gpio_interface.input1.set()
-            gpio_interface.input2.unset()
-        else:
-            gpio_interface.input1.unset()
-            gpio_interface.input2.set()
-        gpio_interface.enable2.start(request.right.speed_percent)
-        if request.right.direction_forward:
-            gpio_interface.input3.set()
-            gpio_interface.input4.unset()
-        else:
-            gpio_interface.input3.unset()
-            gpio_interface.input4.set()
+        if request.left.speed_percent > 0:
+            gpio_interface.enable1.start(request.left.speed_percent)
+            if request.left.direction_forward:
+                gpio_interface.input1.set()
+                gpio_interface.input2.unset()
+            else:
+                gpio_interface.input1.unset()
+                gpio_interface.input2.set()
+        if request.right.speed_percent > 0:
+            gpio_interface.enable2.start(request.right.speed_percent)
+            if request.right.direction_forward:
+                gpio_interface.input3.set()
+                gpio_interface.input4.unset()
+            else:
+                gpio_interface.input3.unset()
+                gpio_interface.input4.set()
         gpio_interface.stop_in(request.duration_ms)
     return SetSpeedResponse(result=True)
 
@@ -45,7 +47,7 @@ class FakeGpio(object):
 
         def __call__(self, *args):
             call_name = '%s(%s)' % (self.name, ','.join(map(str, args)))
-            print 'Fake call: ' + call_name
+            rospy.loginfo('Fake call: ' + call_name)
             return FakeGpio.FakeObject(call_name)
 
         def __getattr__(self, attr):
@@ -62,6 +64,7 @@ class FakeGpio(object):
 try:
     import RPi.GPIO as gpio
 except ImportError:
+    rospy.logwarn('GPOI module not found. Faking it')
     gpio = FakeGpio()
 
 
@@ -99,13 +102,16 @@ class PwmPin(object):
     def __init__(self, pin, frequency=5):
         gpio.setup(pin, gpio.OUT)
         self.pin = pin
+        self.frequency = frequency
         self.pwm = gpio.PWM(pin, frequency)
         self.pwm.stop()
 
     def start(self, percent):
+        rospy.loginfo('PIN %s start PWM at %s%% (freq %sHz)', self.pin, percent, self.frequency)
         self.pwm.start(percent)
 
     def stop(self):
+        rospy.loginfo('PIN %s stop PWM', self.pin)
         self.pwm.stop()
 
 
@@ -117,9 +123,11 @@ class BinPin(object):
         gpio.output(self.pin, 0)
 
     def set(self):
+        rospy.loginfo('PIN %s set to HIGH', self.pin)
         gpio.output(self.pin, 1)
 
     def unset(self):
+        rospy.loginfo('PIN %s set to LOW', self.pin)
         gpio.output(self.pin, 0)
 
 
