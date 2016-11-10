@@ -137,6 +137,8 @@ ros-indigo-rospy
 ros-indigo-sensor-msgs
 ros-indigo-ros-base
 ros-indigo-cv-bridge
+ros-indigo-rqt
+ros-indigo-rqt-image-view
 
 source /opt/ros/indigo/setup.zsh
 catkin_make
