@@ -151,3 +151,10 @@ rosservice call set_speed '{stop: true}'
 rosservice call set_speed '{stop: false, left: {direction_forward: true, speed_percent: 0}, right: {direction_forward: true, speed_percent: 50}, duration_ms: 1000}'
 
 
+
+
+--- color spaces ---
+opencv default: BGR
+
+pyqt wants RGB
+

@@ -21,13 +21,6 @@ def get_calib(full_calib_dir, request):
         disp_to_depth_mat=serialized.getvalue())
 
 
-def client_code_for_info():  # To move there once there is an actual client
-    s = rospy.ServiceProxy('camera_calib', Calib)
-    val = s()
-    valf = StringIO.StringIO(val.disp_to_depth_mat)
-    mat = np.load(valf)
-
-
 def node_main():
     rospy.init_node('images_feeder', anonymous=True)
     params = rospy.get_param('~')
@@ -66,7 +59,7 @@ def node_main():
             res, img = side['cap'].read()
             assert res
             assert img is not None
-            image_message = bridge.cv2_to_imgmsg(img, encoding='bgr8')
+            image_message = get_single_image_to_publish(img, bridge)
             side['pub'].publish(image_message)
             rectified = cv2.remap(img, side['undistortion_map'], side['rectification_map'], cv2.INTER_NEAREST)
             rectified_pair[side['full_name']] = bridge.cv2_to_imgmsg(rectified, encoding='bgr8')
@@ -78,6 +71,13 @@ def node_main():
     for side in sides.values():
         side['cap'].release()
     calib_service.shutdown()
+
+
+def get_single_image_to_publish(img, bridge):
+    img = cv2.resize(img, (320, 240), interpolation=cv2.INTER_AREA)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    return bridge.cv2_to_imgmsg(img, encoding='rgb8')
+
 
 if __name__ == '__main__':
     try:
