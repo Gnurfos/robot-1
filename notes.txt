@@ -141,8 +141,7 @@ ros-indigo-rqt
 ros-indigo-rqt-image-view
 
 source /opt/ros/indigo/setup.zsh
-catkin_make
-source setup.zsh
+source /home/pi/work/robot-1/ros/devel/setup.zsh
 
 roslaunch default.launch calib_dir:=calib_640
 
