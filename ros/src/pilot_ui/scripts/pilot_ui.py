@@ -80,28 +80,32 @@ class PilotUi(QtGui.QWidget):
         return self.send_motor_control(stop=True)
 
     command_duration_ms = 10000
-    speed_percent = 50
+    speed_percent = 80
+    speed_percent_rotate = 70
+    inverted_forward = True
 
     def send_right(self):
         return self.send_motor_control(
-            right=OneMotorSpeed(direction_forward=True, speed_percent=self.speed_percent),
+            right=OneMotorSpeed(direction_forward=False, speed_percent=self.speed_percent_rotate),
+            left=OneMotorSpeed(direction_forward=True, speed_percent=self.speed_percent_rotate),
             duration_ms=self.command_duration_ms)
 
     def send_left(self):
         return self.send_motor_control(
-            left=OneMotorSpeed(direction_forward=True, speed_percent=self.speed_percent),
+            right=OneMotorSpeed(direction_forward=True, speed_percent=self.speed_percent_rotate),
+            left=OneMotorSpeed(direction_forward=False, speed_percent=self.speed_percent_rotate),
             duration_ms=self.command_duration_ms)
 
     def send_forward(self):
         return self.send_motor_control(
-            right=OneMotorSpeed(direction_forward=True, speed_percent=self.speed_percent),
-            left=OneMotorSpeed(direction_forward=True, speed_percent=self.speed_percent),
+            right=OneMotorSpeed(direction_forward=not self.inverted_forward, speed_percent=self.speed_percent),
+            left=OneMotorSpeed(direction_forward=not self.inverted_forward, speed_percent=self.speed_percent),
             duration_ms=self.command_duration_ms)
 
     def send_back(self):
         return self.send_motor_control(
-            right=OneMotorSpeed(direction_forward=False, speed_percent=self.speed_percent),
-            left=OneMotorSpeed(direction_forward=False, speed_percent=self.speed_percent),
+            right=OneMotorSpeed(direction_forward=self.inverted_forward, speed_percent=self.speed_percent),
+            left=OneMotorSpeed(direction_forward=self.inverted_forward, speed_percent=self.speed_percent),
             duration_ms=self.command_duration_ms)
 
     def send_motor_control(self, **kwargs):
