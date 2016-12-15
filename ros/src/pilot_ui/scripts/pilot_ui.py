@@ -55,6 +55,14 @@ class PilotUi(QtGui.QWidget):
         grid.addWidget(self.but_st, 1, 1)
         self.layout.addLayout(grid)
 
+        self.layout.addWidget(QtGui.QLabel('Move speed'))
+        self.move_speed_slider = QtGui.QSlider(orientation=QtCore.Qt.Horizontal, value=100, minimum=1, maximum=100)
+        self.layout.addWidget(self.move_speed_slider)
+
+        self.layout.addWidget(QtGui.QLabel('Rotate speed'))
+        self.rotate_speed_slider = QtGui.QSlider(orientation=QtCore.Qt.Horizontal, value=80, minimum=1, maximum=100)
+        self.layout.addWidget(self.rotate_speed_slider)
+
         images_layout = QtGui.QHBoxLayout()
         images_layout.addStretch()
         self.img = {}
@@ -80,32 +88,30 @@ class PilotUi(QtGui.QWidget):
         return self.send_motor_control(stop=True)
 
     command_duration_ms = 10000
-    speed_percent = 80
-    speed_percent_rotate = 70
     inverted_forward = True
 
     def send_right(self):
         return self.send_motor_control(
-            right=OneMotorSpeed(direction_forward=False, speed_percent=self.speed_percent_rotate),
-            left=OneMotorSpeed(direction_forward=True, speed_percent=self.speed_percent_rotate),
+            right=OneMotorSpeed(direction_forward=False, speed_percent=self.rotate_speed_slider.value()),
+            left=OneMotorSpeed(direction_forward=True, speed_percent=self.rotate_speed_slider.value()),
             duration_ms=self.command_duration_ms)
 
     def send_left(self):
         return self.send_motor_control(
-            right=OneMotorSpeed(direction_forward=True, speed_percent=self.speed_percent_rotate),
-            left=OneMotorSpeed(direction_forward=False, speed_percent=self.speed_percent_rotate),
+            right=OneMotorSpeed(direction_forward=True, speed_percent=self.rotate_speed_slider.value()),
+            left=OneMotorSpeed(direction_forward=False, speed_percent=self.rotate_speed_slider.value()),
             duration_ms=self.command_duration_ms)
 
     def send_forward(self):
         return self.send_motor_control(
-            right=OneMotorSpeed(direction_forward=not self.inverted_forward, speed_percent=self.speed_percent),
-            left=OneMotorSpeed(direction_forward=not self.inverted_forward, speed_percent=self.speed_percent),
+            right=OneMotorSpeed(direction_forward=not self.inverted_forward, speed_percent=self.move_speed_slider.value()),
+            left=OneMotorSpeed(direction_forward=not self.inverted_forward, speed_percent=self.move_speed_slider.value()),
             duration_ms=self.command_duration_ms)
 
     def send_back(self):
         return self.send_motor_control(
-            right=OneMotorSpeed(direction_forward=self.inverted_forward, speed_percent=self.speed_percent),
-            left=OneMotorSpeed(direction_forward=self.inverted_forward, speed_percent=self.speed_percent),
+            right=OneMotorSpeed(direction_forward=self.inverted_forward, speed_percent=self.move_speed_slider.value()),
+            left=OneMotorSpeed(direction_forward=self.inverted_forward, speed_percent=self.move_speed_slider.value()),
             duration_ms=self.command_duration_ms)
 
     def send_motor_control(self, **kwargs):
