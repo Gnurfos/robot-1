@@ -1,3 +1,40 @@
+--- architecture ---
+
+
+
+Node: CalibratedStereoCamera
+    params: calib_folder
+    params: resolution
+    params: fps
+    produces: rectified image pair (/rectified_pair) + /images_L /images_R
+    service: disp_to_depth_mat (/camera_calib)
+
+Node: Disparity
+    consumes: rectified image pair
+    produces: disparity
+    produces: point cloud
+    param: max distance
+    param: time smoothing
+    param: accepted deviation
+
+Node: MotorsController
+    service: set_speed
+        left_motor
+            speed_percent
+            direction
+        right_motor
+            speed_percent
+            direction
+        duration
+
+Node: Slam ?
+Node: SensorsArray ?
+Node: WebUI ?
+
+
+
+
+
  --- ROS ---
 
 /home/seb/download/vrac/ROScheatsheet_catkin.pdf
@@ -69,36 +106,6 @@ reprojectImageTo3D(tuner.disparity, calibration.disp_to_depth_mat)
 
 
 
-
-
-Node: CalibratedStereoCamera
-    params: calib_folder
-    params: resolution
-    params: fps
-    produces: rectified image pair
-    service: disp_to_depth_mat
-
-Node: Disparity
-    consumes: rectified image pair
-    produces: disparity
-    produces: point cloud
-    param: max distance
-    param: time smoothing
-    param: accepted deviation
-
-Node: MotorsController
-    service: set_speed
-        left_motor
-            speed_percent
-            direction
-        right_motor
-            speed_percent
-            direction
-        duration
-
-Node: Slam ?
-Node: SensorsArray ?
-Node: WebUI ?
 
     
     
@@ -174,3 +181,9 @@ raspi-config > advanced > enable i2c
 50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 70: -- -- -- -- -- -- -- --
+
+
+----
+
+rosrun topic_tools transform /rectified_pair /rect_left sensor_msgs/Image m.left
+rqt_image_view /rect_left

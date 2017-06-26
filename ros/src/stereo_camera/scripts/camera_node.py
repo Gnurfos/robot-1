@@ -23,6 +23,7 @@ def get_calib(full_calib_dir, request):
 
 def node_main():
     rospy.init_node('images_feeder', anonymous=True)
+    print rospy.get_param('/rosdistro')
     params = rospy.get_param('~')
     full_calib_dir = params['full_calib_dir']
     calib_service = rospy.Service('camera_calib', Calib, partial(get_calib, full_calib_dir))
